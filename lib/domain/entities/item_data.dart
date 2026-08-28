@@ -2,24 +2,24 @@ import 'package:shipment_mate/domain/entities/data_field.dart';
 
 class ItemData {
   static final List<DataField> fields = [
-    DataField(title: 'itemSMMSNumber', type: AllowedType.string, columnLetterInExcel: 'AF'),
-    DataField(title: 'itemName', type: AllowedType.string, columnLetterInExcel: 'AG'),
-    DataField(title: 'reqQty', type: AllowedType.integer, columnLetterInExcel: 'AJ'),
-    DataField(title: 'prLineStatus', type: AllowedType.boolean, columnLetterInExcel: 'AN'),
-    DataField(title: 'PR no', type: AllowedType.string, columnLetterInExcel: 'C'),
-    DataField(title: 'prDescription', type: AllowedType.string, columnLetterInExcel: 'I'),
-    DataField(title: 'prLineNumber', type: AllowedType.integer, columnLetterInExcel: 'AE'),
-    DataField(title: 'requestedBy', type: AllowedType.string, columnLetterInExcel: 'AS'),
-    DataField(title: 'department', type: AllowedType.string, columnLetterInExcel: 'M'),
-    DataField(title: 'deliveryType', type: AllowedType.string, columnLetterInExcel: 'N'),
-    DataField(title: 'acknowledgedDate', type: AllowedType.date, columnLetterInExcel: 'G'),
-    DataField(title: 'acknowledgedBy', type: AllowedType.string, columnLetterInExcel: 'H'),
-    DataField(title: 'woNumber', type: AllowedType.string, columnLetterInExcel: 'P'),
-    DataField(title: 'woTitle', type: AllowedType.string, columnLetterInExcel: 'Q'),
-    DataField(title: 'poNumber', type: AllowedType.string, columnLetterInExcel: 'AT'),
-    DataField(title: 'graNumber', type: AllowedType.string, columnLetterInExcel: 'AX'),
-    DataField(title: 'erpPrNumber', type: AllowedType.integer, columnLetterInExcel: 'BG'),
-    DataField(title: 'transportNumber', type: AllowedType.string, columnLetterInExcel: 'BP'),
+    DataField(title: 'SMMS no', type: AllowedType.string, columnLetterInExcel: 'AF'),
+    DataField(title: 'Item name', type: AllowedType.string, columnLetterInExcel: 'AG'),
+    DataField(title: 'Req Qty', type: AllowedType.integer, columnLetterInExcel: 'AJ'),
+    DataField(title: 'PR Line status', type: AllowedType.boolean, columnLetterInExcel: 'AN'),
+    DataField(title: 'PR', type: AllowedType.string, columnLetterInExcel: 'C'),
+    DataField(title: 'PR Description', type: AllowedType.string, columnLetterInExcel: 'I'),
+    DataField(title: 'PR Line no', type: AllowedType.integer, columnLetterInExcel: 'AE'),
+    DataField(title: 'Requested By', type: AllowedType.string, columnLetterInExcel: 'AS'),
+    DataField(title: 'Department', type: AllowedType.string, columnLetterInExcel: 'M'),
+    DataField(title: 'Delivery Type', type: AllowedType.string, columnLetterInExcel: 'N'),
+    DataField(title: 'Acknowledged Date', type: AllowedType.date, columnLetterInExcel: 'G'),
+    DataField(title: 'Acknowledged By', type: AllowedType.string, columnLetterInExcel: 'H'),
+    DataField(title: 'WO', type: AllowedType.string, columnLetterInExcel: 'P'),
+    DataField(title: 'WO Title', type: AllowedType.string, columnLetterInExcel: 'Q'),
+    DataField(title: 'PO', type: AllowedType.string, columnLetterInExcel: 'AT'),
+    DataField(title: 'GRA', type: AllowedType.string, columnLetterInExcel: 'AX'),
+    DataField(title: 'ERPPR', type: AllowedType.integer, columnLetterInExcel: 'BG'),
+    DataField(title: 'Transport no', type: AllowedType.string, columnLetterInExcel: 'BP'),
     DataField(title: 'Handling Unit', type: AllowedType.string, columnLetterInExcel: 'BQ'),
   ];
 
@@ -69,23 +69,23 @@ class ItemData {
   }
 
   // Getters for convenience (optional, but helps keep existing code working)
-  String get itemSMMSNumber => values['itemSMMSNumber'] ?? '';
-  String get itemName => values['itemName'] ?? '';
-  int get reqQty => values['reqQty'] ?? 0;
-  bool get prLineStatus => values['prLineStatus'] ?? false;
-  String get requisitionNo => values['PR no'] ?? '';
-  String get prDescription => values['prDescription'] ?? '';
-  int get prLineNumber => values['prLineNumber'] ?? 0;
-  String get requestedBy => values['requestedBy'] ?? '';
-  String get department => values['department'] ?? '';
-  String get deliveryType => values['deliveryType'] ?? '';
-  DateTime get acknowledgedDate => values['acknowledgedDate'] ?? DateTime.now();
-  String get acknowledgedBy => values['acknowledgedBy'] ?? '';
-  String? get woNumber => values['woNumber'];
-  String? get woTitle => values['woTitle'];
-  String? get poNumber => values['poNumber'];
-  String? get graNumber => values['graNumber'];
-  int? get erpPrNumber => values['erpPrNumber'];
-  int? get transportNumber => values['transportNumber'];
+  String get itemSMMSNumber => values['SMMS no'] ?? '';
+  String get itemName => values['Item name'] ?? '';
+  int get reqQty => values['Req Qty'] ?? 0;
+  bool get prLineStatus => values['PR Line status'] ?? false;
+  String get requisitionNo => values['PR'] ?? '';
+  String get prDescription => values['PR Description'] ?? '';
+  int get prLineNumber => values['PR Line no'] ?? 0;
+  String get requestedBy => values['Requested By'] ?? '';
+  String get department => values['Department'] ?? '';
+  String get deliveryType => values['Delivery Type'] ?? '';
+  DateTime get acknowledgedDate => values['Acknowledged Date'] ?? DateTime.now();
+  String get acknowledgedBy => values['Acknowledged By'] ?? '';
+  String? get woNumber => values['WO'];
+  String? get woTitle => values['WO Title'];
+  String? get poNumber => values['PO'];
+  String? get graNumber => values['GRA'];
+  int? get erpPrNumber => values['ERPPR'];
+  int? get transportNumber => values['Transport no'];
   int? get handlingUnit => values['Handling Unit'];
 }
