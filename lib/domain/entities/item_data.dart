@@ -1,4 +1,5 @@
 import 'package:shipment_mate/domain/entities/data_field.dart';
+import 'package:collection/collection.dart';
 
 class ItemData {
   static final List<DataField> fields = [
@@ -67,6 +68,18 @@ class ItemData {
     buffer.write('extraFields: $extraFields');
     return buffer.toString();
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ItemData &&
+          runtimeType == other.runtimeType &&
+          const MapEquality().equals(values, other.values) &&
+          const MapEquality().equals(extraFields, other.extraFields);
+
+  @override
+  int get hashCode =>
+      const MapEquality().hash(values) ^ const MapEquality().hash(extraFields);
 
   // Getters for convenience (optional, but helps keep existing code working)
   String get itemSMMSNumber => values['SMMS no'] ?? '';

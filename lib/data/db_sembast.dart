@@ -17,7 +17,23 @@ class DbSembast implements IDataBase {
     final db = _database;
     if (db != null) {
       final store = intMapStoreFactory.store(table);
-      store.add(db, updatedEntry.toMap());
+      await store.add(db, updatedEntry.toMap());
+    }
+  }
+
+  @override
+  Future<void> insertEntries({
+    required String table,
+    required List<ItemData> entries,
+  }) async {
+    final db = _database;
+    if (db != null) {
+      final store = intMapStoreFactory.store(table);
+      await db.transaction((txn) async {
+        for (final entry in entries) {
+          await store.add(txn, entry.toMap());
+        }
+      });
     }
   }
 
