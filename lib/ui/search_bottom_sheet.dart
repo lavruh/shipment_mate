@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shipment_mate/domain/entities/data_field.dart';
 import 'package:shipment_mate/domain/entities/item_data.dart';
+import 'package:shipment_mate/ui/scanner_dialog.dart';
 
 class SearchBottomSheet extends StatefulWidget {
   final Map<String, dynamic> activeFilters;
@@ -47,6 +48,18 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
     }
   }
 
+  Future<void> _scanFromCamera() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const ScannerDialog()),
+    );
+    if (result != null) {
+      setState(() {
+        _valueController.text = result;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -85,9 +98,18 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                   controller: _valueController,
                   decoration: InputDecoration(
                     labelText: 'Value',
-                    suffix: IconButton(
-                      onPressed: _addCurrentFilter,
-                      icon: const Icon(Icons.add),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: _scanFromCamera,
+                          icon: const Icon(Icons.camera_alt),
+                        ),
+                        IconButton(
+                          onPressed: _addCurrentFilter,
+                          icon: const Icon(Icons.add),
+                        ),
+                      ],
                     ),
                   ),
                   onSubmitted: (_) => _addCurrentFilter(),
