@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shipment_mate/domain/db_provider.dart';
 import 'package:shipment_mate/domain/entities/item_data.dart';
+import 'package:shipment_mate/ui/item_details_screen.dart';
 import 'package:shipment_mate/ui/search_bottom_sheet.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
@@ -121,22 +122,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           child: ListTile(
                             title: Text(item.itemName),
-                            subtitle: Text('SMMS: ${item.itemSMMSNumber} | REQ: ${item.requisitionNo}'),
+                            subtitle: Text('SMMS: ${item.itemSMMSNumber} | PR: ${item.requisitionNo}'),
                             trailing: Text(item.reqQty.toString()),
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Item Details'),
-                                  content: SingleChildScrollView(
-                                    child: Text(item.toString()),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Close'),
-                                    ),
-                                  ],
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ItemDetailsScreen(item: item),
                                 ),
                               );
                             },
