@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:shipment_mate/domain/db_provider.dart';
 
 import '../domain/data_sources_provider.dart';
@@ -29,42 +30,60 @@ class SourceSelectScreen extends ConsumerWidget {
                   itemCount: files.length,
                   itemBuilder: (context, index) {
                     final file = files[index];
-                    return ListTile(
-                      leading: const Icon(Icons.insert_drive_file),
-                      title: Text(file.path.split('/').last),
-                      subtitle: Text(file.path),
-                      onTap: () async {
-                        ref.read(dbPathProvider.notifier).state = file.path;
-                      },
-                      onLongPress: () async {
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Delete Data Source'),
-                            content: Text(
-                                'Are you sure you want to delete ${file.path.split('/').last}?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Delete',
-                                    style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
-                          ),
-                        );
+                    return Slidable(
+                      key: ValueKey(file.path),
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        extentRatio: 0.25,
+                        children: [
+                          SlidableAction(
+                            onPressed: (context) async {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Delete Data Source'),
+                                  content: Text(
+                                      'Are you sure you want to delete ${file.path.split('/').last}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
 
-                        if (confirmed == true) {
-                          if (ref.read(dbPathProvider) == file.path) {
-                            ref.read(dbPathProvider.notifier).state = null;
-                          }
-                          await file.delete();
-                          ref.invalidate(dataSourcesProvider);
-                        }
-                      },
+                              if (confirmed == true) {
+                                if (ref.read(dbPathProvider) == file.path) {
+                                  ref.read(dbPathProvider.notifier).state =
+                                      null;
+                                }
+                                await file.delete();
+                                ref.invalidate(dataSourcesProvider);
+                              }
+                            },
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: 'Delete',
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        leading: const Icon(Icons.insert_drive_file),
+                        title: Text(file.path.split('/').last),
+                        subtitle: Text(file.path),
+                        onTap: () async {
+                          ref.read(dbPathProvider.notifier).state = file.path;
+                        },
+                      ),
                     );
                   },
                 );

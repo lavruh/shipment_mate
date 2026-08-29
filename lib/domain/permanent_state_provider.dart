@@ -16,12 +16,8 @@ class PermanentStateNotifier extends AsyncNotifier<List<ItemData>> {
   Future<void> saveItem(ItemData item) async {
     final db = await ref.read(todosDbProvider.future);
     
-    // Check if an item with the same identity already exists
-    final existing = state.value?.firstWhereOrNull((i) =>
-        i.itemSMMSNumber == item.itemSMMSNumber &&
-        i.requisitionNo == item.requisitionNo &&
-        i.itemName == item.itemName &&
-        i.prLineNumber == item.prLineNumber);
+    // Check if an item with the same identity already exists using the updated equality check
+    final existing = state.value?.firstWhereOrNull((i) => i == item);
 
     if (existing != null) {
       await db.deleteEntry(table: _tableName, entry: existing);

@@ -92,6 +92,12 @@ class DbSembast implements IDataBase {
     return true;
   }
 
+  @override
+  Future<void> close() async {
+    await _database?.close();
+    _database = null;
+  }
+
   Filter? _filterFromItemData(ItemData? filters) {
     if (filters == null) return null;
     final fields = filters.values;

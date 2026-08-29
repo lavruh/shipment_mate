@@ -1,5 +1,4 @@
 import 'package:shipment_mate/domain/entities/data_field.dart';
-import 'package:collection/collection.dart';
 
 class ItemData {
   static final List<DataField> fields = [
@@ -47,13 +46,11 @@ class ItemData {
 
   factory ItemData.fromMap(Map<String, dynamic> map) {
     final values = <String, dynamic>{};
-    fields.forEach((field) {
-      var val = map[field.title];
-      if (field.type == AllowedType.date && val is String) {
-        val = DateTime.tryParse(val);
-      }
-      values[field.title] = val;
-    });
+    for (final field in fields) {
+      final val = map[field.title];
+      // Use the field's type to correctly parse the value from the data source
+      values[field.title] = field.type.fromDataSource(val);
+    }
     return ItemData(
       values: values,
       extraFields: Map<String, String>.from(map['extraFields'] ?? {}),
@@ -75,12 +72,19 @@ class ItemData {
       identical(this, other) ||
       other is ItemData &&
           runtimeType == other.runtimeType &&
-          const MapEquality().equals(values, other.values) &&
-          const MapEquality().equals(extraFields, other.extraFields);
+          itemSMMSNumber == other.itemSMMSNumber &&
+          reqQty == other.reqQty &&
+          requisitionNo == other.requisitionNo &&
+          requestedBy == other.requestedBy &&
+          handlingUnit == other.handlingUnit;
 
   @override
   int get hashCode =>
-      const MapEquality().hash(values) ^ const MapEquality().hash(extraFields);
+      itemSMMSNumber.hashCode ^
+      reqQty.hashCode ^
+      requisitionNo.hashCode ^
+      requestedBy.hashCode ^
+      handlingUnit.hashCode;
 
   ItemData copyWith({
     Map<String, dynamic>? values,
@@ -99,24 +103,24 @@ class ItemData {
   }
 
   // Getters for convenience (optional, but helps keep existing code working)
-  String get itemSMMSNumber => values['SMMS no'] ?? '';
-  String get itemName => values['Item name'] ?? '';
-  int get reqQty => values['Req Qty'] ?? 0;
-  bool get prLineStatus => values['PR Line status'] ?? false;
-  String get requisitionNo => values['PR'] ?? '';
-  String get prDescription => values['PR Description'] ?? '';
-  int get prLineNumber => values['PR Line no'] ?? 0;
-  String get requestedBy => values['Requested By'] ?? '';
-  String get department => values['Department'] ?? '';
-  String get deliveryType => values['Delivery Type'] ?? '';
-  DateTime get acknowledgedDate => values['Acknowledged Date'] ?? DateTime.now();
-  String get acknowledgedBy => values['Acknowledged By'] ?? '';
-  String? get woNumber => values['WO'];
-  String? get woTitle => values['WO Title'];
-  String? get poNumber => values['PO'];
-  String? get graNumber => values['GRA'];
-  int? get erpPrNumber => values['ERPPR'];
-  int? get transportNumber => values['Transport no'];
-  int? get handlingUnit => values['Handling Unit'];
-  int get receivedQty => values['Received Qty'] ?? 0;
+  String get itemSMMSNumber => AllowedType.string.fromDataSource(values['SMMS no']);
+  String get itemName => AllowedType.string.fromDataSource(values['Item name']);
+  int get reqQty => AllowedType.integer.fromDataSource(values['Req Qty']);
+  bool get prLineStatus => AllowedType.boolean.fromDataSource(values['PR Line status']);
+  String get requisitionNo => AllowedType.string.fromDataSource(values['PR']);
+  String get prDescription => AllowedType.string.fromDataSource(values['PR Description']);
+  int get prLineNumber => AllowedType.integer.fromDataSource(values['PR Line no']);
+  String get requestedBy => AllowedType.string.fromDataSource(values['Requested By']);
+  String get department => AllowedType.string.fromDataSource(values['Department']);
+  String get deliveryType => AllowedType.string.fromDataSource(values['Delivery Type']);
+  DateTime get acknowledgedDate => AllowedType.date.fromDataSource(values['Acknowledged Date']);
+  String get acknowledgedBy => AllowedType.string.fromDataSource(values['Acknowledged By']);
+  String? get woNumber => values['WO']?.toString();
+  String? get woTitle => values['WO Title']?.toString();
+  String? get poNumber => values['PO']?.toString();
+  String? get graNumber => values['GRA']?.toString();
+  int? get erpPrNumber => AllowedType.integer.fromDataSource(values['ERPPR']);
+  String? get transportNumber => values['Transport no']?.toString();
+  String? get handlingUnit => values['Handling Unit']?.toString();
+  int get receivedQty => AllowedType.integer.fromDataSource(values['Received Qty']);
 }

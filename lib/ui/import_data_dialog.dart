@@ -28,12 +28,20 @@ class _ImportDataDialogState extends State<ImportDataDialog> {
   }
 
   Future<void> _startImport() async {
-    try {
-      final appDir = await getApplicationDocumentsDirectory();
-      final fileName = p.basenameWithoutExtension(widget.sourceFile.path);
-      final dbPath = p.join(appDir.path, '$fileName.db');
+    final appDir = await getApplicationDocumentsDirectory();
+    final fileName = p.basenameWithoutExtension(widget.sourceFile.path);
+    final dbPath = p.join(appDir.path, '$fileName.db');
+    final db = DbSembast();
 
-      final db = DbSembast();
+    Future<void> cleanup() async {
+      await db.close();
+      final file = File(dbPath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    }
+
+    try {
       await db.openDbFromFile(path: dbPath);
 
       final converter = DataFileConverterXlsx();
@@ -58,21 +66,25 @@ class _ImportDataDialogState extends State<ImportDataDialog> {
             _logController.text += 'DONE.\n';
           });
         },
-        onError: ({required message}) {
+        onError: ({required message}) async {
+          await cleanup();
           if (!mounted) return;
           setState(() {
             _isDone = true;
             _message = 'Error: $message';
-            _logController.text += 'ERROR: $message\n';
+            _logController.text += 'ERROR: $message (Cleanup done)\n';
           });
         },
       );
     } catch (e) {
-      setState(() {
-        _isDone = true;
-        _message = 'Critical Error: $e';
-        _logController.text += 'CRITICAL ERROR: $e\n';
-      });
+      await cleanup();
+      if (mounted) {
+        setState(() {
+          _isDone = true;
+          _message = 'Critical Error: $e';
+          _logController.text += 'CRITICAL ERROR: $e (Cleanup done)\n';
+        });
+      }
     }
   }
 
