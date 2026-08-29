@@ -38,6 +38,25 @@ class DbSembast implements IDataBase {
   }
 
   @override
+  Future<void> deleteEntry({
+    required String table,
+    required ItemData entry,
+  }) async {
+    final db = _database;
+    if (db != null) {
+      final store = intMapStoreFactory.store(table);
+      // We search for the exact match of the map representation
+      await store.delete(
+        db,
+        finder: Finder(filter: Filter.custom((record) {
+          final recordItem = ItemData.fromMap(record.value as Map<String, dynamic>);
+          return recordItem == entry;
+        })),
+      );
+    }
+  }
+
+  @override
   Stream<ItemData> getEntries({
     required String table,
     ItemData? filters,
@@ -50,7 +69,7 @@ class DbSembast implements IDataBase {
         finder: Finder(filter: _filterFromItemData(filters)),
       );
       for (final entry in entries) {
-        yield ItemData.fromMap(entry.value);
+        yield ItemData.fromMap(entry.value as Map<String, dynamic>);
       }
     }
   }

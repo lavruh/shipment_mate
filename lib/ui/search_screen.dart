@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shipment_mate/domain/db_provider.dart';
 import 'package:shipment_mate/domain/entities/item_data.dart';
-import 'package:shipment_mate/ui/item_details_screen.dart';
+import 'package:shipment_mate/ui/item_data_widget.dart';
+import 'package:shipment_mate/ui/received_items_screen.dart';
 import 'package:shipment_mate/ui/search_bottom_sheet.dart';
 import 'package:collection/collection.dart';
 
@@ -91,9 +92,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         actions: [
           IconButton(
             onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ReceivedItemsScreen()),
+              );
+            },
+            icon: const Icon(Icons.inventory),
+            tooltip: 'Received Items',
+          ),
+          IconButton(
+            onPressed: () {
               ref.read(dbPathProvider.notifier).state = null;
             },
             icon: const Icon(Icons.close),
+            tooltip: 'Close Database',
           ),
         ],
       ),
@@ -142,46 +154,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           subtitle: Text('${items.length} items'),
                           initiallyExpanded: true,
                           children: items.map((item) {
-                            return Card(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 7 ,
-                                vertical: 4,
-                              ),
-                              child: ListTile(
-                                title: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 7,
-                                      ),
-                                      child: Text(
-                                        item.itemSMMSNumber,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        item.itemName,
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Text(item.reqQty.toString()),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ItemDetailsScreen(item: item),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
+                            return ItemDataWidget(item: item);
                           }).toList(),
                         );
                       },

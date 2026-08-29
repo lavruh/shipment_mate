@@ -22,6 +22,7 @@ class ItemData {
     DataField(title: 'ERPPR', type: AllowedType.integer, columnLetterInExcel: 'BG'),
     DataField(title: 'Transport no', type: AllowedType.string, columnLetterInExcel: 'BP'),
     DataField(title: 'Handling Unit', type: AllowedType.string, columnLetterInExcel: 'BQ'),
+    DataField(title: 'Received Qty', type: AllowedType.integer, columnLetterInExcel: ''),
   ];
 
   final Map<String, dynamic> values;
@@ -81,6 +82,22 @@ class ItemData {
   int get hashCode =>
       const MapEquality().hash(values) ^ const MapEquality().hash(extraFields);
 
+  ItemData copyWith({
+    Map<String, dynamic>? values,
+    Map<String, String>? extraFields,
+  }) {
+    return ItemData(
+      values: values ?? Map<String, dynamic>.from(this.values),
+      extraFields: extraFields ?? Map<String, String>.from(this.extraFields),
+    );
+  }
+
+  ItemData copyWithUpdate(String key, dynamic value) {
+    final newValues = Map<String, dynamic>.from(values);
+    newValues[key] = value;
+    return copyWith(values: newValues);
+  }
+
   // Getters for convenience (optional, but helps keep existing code working)
   String get itemSMMSNumber => values['SMMS no'] ?? '';
   String get itemName => values['Item name'] ?? '';
@@ -101,4 +118,5 @@ class ItemData {
   int? get erpPrNumber => values['ERPPR'];
   int? get transportNumber => values['Transport no'];
   int? get handlingUnit => values['Handling Unit'];
+  int get receivedQty => values['Received Qty'] ?? 0;
 }
