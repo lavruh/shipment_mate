@@ -6,4 +6,5 @@ abstract class IDataBase {
   Future<void> insertEntry({required String  table, required ItemData updatedEntry});
   Future<void> insertEntries({required String table, required List<ItemData> entries});
   Future<void> deleteEntry({required String table, required ItemData entry});
+  Future<void> clearTable({required String table});
 }

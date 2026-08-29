@@ -47,6 +47,14 @@ class PermanentStateNotifier extends AsyncNotifier<List<ItemData>> {
     ref.invalidateSelf();
     await future;
   }
+
+  Future<void> clearAll() async {
+    final db = await ref.read(todosDbProvider.future);
+    await db.clearTable(table: _tableName);
+
+    ref.invalidateSelf();
+    await future;
+  }
 }
 
 final permanentStateProvider =

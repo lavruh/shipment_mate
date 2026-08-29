@@ -57,6 +57,15 @@ class DbSembast implements IDataBase {
   }
 
   @override
+  Future<void> clearTable({required String table}) async {
+    final db = _database;
+    if (db != null) {
+      final store = intMapStoreFactory.store(table);
+      await store.delete(db);
+    }
+  }
+
+  @override
   Stream<ItemData> getEntries({
     required String table,
     ItemData? filters,
