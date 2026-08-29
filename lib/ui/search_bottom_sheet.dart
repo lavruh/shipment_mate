@@ -53,10 +53,11 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
       context,
       MaterialPageRoute(builder: (context) => const ScannerDialog()),
     );
-    if (result != null) {
+    if (result != null && mounted) {
       setState(() {
         _valueController.text = result;
       });
+      _addCurrentFilter();
     }
   }
 
@@ -77,7 +78,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
             children: [
               Expanded(
                 child: DropdownButtonFormField<DataField>(
-                  initialValue: _selectedField ,
+                  initialValue: _selectedField,
                   decoration: const InputDecoration(labelText: 'Select Field'),
                   items: ItemData.fields.map((field) {
                     return DropdownMenuItem(
@@ -128,6 +129,13 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                 label: Text(
                   '${entry.key}: ${field.type.toDisplayString(entry.value)}',
                 ),
+                onPressed: () {
+                  setState(() {
+                    _selectedField = field;
+                    _valueController.text =
+                        field.type.toDisplayString(entry.value);
+                  });
+                },
                 onDeleted: () {
                   setState(() {
                     widget.onRemoveFilter(entry.key);

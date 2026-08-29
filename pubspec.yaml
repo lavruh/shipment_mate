@@ -2,7 +2,7 @@ name: shipment_mate
 description: "App helping to sort spare parts shipments"
 publish_to: 'none'
 
-version: 1.0.4+1
+version: 1.0.5+1
 
 environment:
   sdk: ^3.13.0

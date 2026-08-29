@@ -10,6 +10,7 @@ class ScannerDialog extends StatefulWidget {
 
 class _ScannerDialogState extends State<ScannerDialog> {
   final MobileScannerController controller = MobileScannerController();
+  bool _isPopped = false;
 
   @override
   void dispose() {
@@ -36,10 +37,12 @@ class _ScannerDialogState extends State<ScannerDialog> {
       body: MobileScanner(
         controller: controller,
         onDetect: (capture) {
+          if (_isPopped) return;
           final List<Barcode> barcodes = capture.barcodes;
           for (final barcode in barcodes) {
-            if (barcode.rawValue != null) {
-              Navigator.pop(context, barcode.rawValue);
+            if (barcode.displayValue != null) {
+              _isPopped = true;
+              Navigator.pop(context, barcode.displayValue);
               break;
             }
           }
