@@ -4,6 +4,7 @@ import 'package:shipment_mate/domain/db_provider.dart';
 import 'package:shipment_mate/domain/entities/item_data.dart';
 import 'package:shipment_mate/ui/item_details_screen.dart';
 import 'package:shipment_mate/ui/search_bottom_sheet.dart';
+import 'package:collection/collection.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -28,9 +29,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     });
 
     try {
-      final filters = ItemData(values: Map.from(_activeFilters), extraFields: {});
+      final filters = ItemData(
+        values: Map.from(_activeFilters),
+        extraFields: {},
+      );
       final stream = db.getEntries(table: 'items', filters: filters);
-      
+
       await for (final item in stream) {
         if (!mounted) break;
         setState(() {
@@ -39,9 +43,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Search failed: $e')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Search failed: $e')));
       }
     } finally {
       if (mounted) {
@@ -76,6 +79,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final dbAsync = ref.watch(todosDbProvider);
+    final groupedResults = groupBy(
+      _results,
+      (ItemData item) => item.requisitionNo,
+    );
+    final sortedPrNumbers = groupedResults.keys.toList()..sort();
 
     return Scaffold(
       appBar: AppBar(
@@ -98,9 +106,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 child: Wrap(
                   spacing: 8,
                   children: _activeFilters.entries.map((entry) {
-                    final field = ItemData.fields.firstWhere((f) => f.title == entry.key);
+                    final field = ItemData.fields.firstWhere(
+                      (f) => f.title == entry.key,
+                    );
                     return Chip(
-                      label: Text('${entry.key}: ${field.type.toDisplayString(entry.value)}'),
+                      label: Text(
+                        '${entry.key}: ${field.type.toDisplayString(entry.value)}',
+                      ),
                       onDeleted: () {
                         setState(() {
                           _activeFilters.remove(entry.key);
@@ -113,27 +125,64 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               ),
             Expanded(
               child: _results.isEmpty && !_isSearching
-                  ? const Center(child: Text('No results found. Try filtering.'))
+                  ? const Center(
+                      child: Text('No results found. Try filtering.'),
+                    )
                   : ListView.builder(
-                      itemCount: _results.length,
+                      itemCount: sortedPrNumbers.length,
                       itemBuilder: (context, index) {
-                        final item = _results[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          child: ListTile(
-                            title: Text(item.itemName),
-                            subtitle: Text('SMMS: ${item.itemSMMSNumber} | PR: ${item.requisitionNo}'),
-                            trailing: Text(item.reqQty.toString()),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ItemDetailsScreen(item: item),
-                                ),
-                              );
-                            },
+                        final prNumber = sortedPrNumbers[index];
+                        final items = groupedResults[prNumber]!;
+
+                        return ExpansionTile(
+                          title: Text(
+                            'PR: $prNumber',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          subtitle: Text('${items.length} items'),
+                          initiallyExpanded: true,
+                          children: items.map((item) {
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 7 ,
+                                vertical: 4,
+                              ),
+                              child: ListTile(
+                                title: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                      ),
+                                      child: Text(
+                                        item.itemSMMSNumber,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        item.itemName,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Text(item.reqQty.toString()),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ItemDetailsScreen(item: item),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }).toList(),
                         );
                       },
                     ),
